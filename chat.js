@@ -55,29 +55,16 @@ async function sendMessage() {
 
 请以友好专业的态度回答用户问题。记住你是Daisy的AI小助理，要展现出对她专业背景的了解，同时保持对话的自然和亲切。`;
 
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`  // 使用环境变量
-    'Access-Control-Allow-Origin': '*'
-},
-            body: JSON.stringify({
-                model: "deepseek-chat",
-                messages: [
-                    {
-                        "role": "system",
-                        "content": systemPrompt
-                    },
-                    {
-                        "role": "user",
-                        "content": message
-                    }
-                ],
-                temperature: 0.7
-            })
-        });
-
+        const response = await fetch('/api/chat', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        message: message,
+        systemPrompt: systemPrompt
+    })
+});
         loadingMessage.remove();
 
         if (!response.ok) {
