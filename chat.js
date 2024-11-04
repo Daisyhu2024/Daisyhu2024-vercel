@@ -60,6 +60,7 @@ async function sendMessage() {
             headers: {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`  // 使用环境变量
+    'Access-Control-Allow-Origin': '*'
 },
             body: JSON.stringify({
                 model: "deepseek-chat",
