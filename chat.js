@@ -2,7 +2,7 @@
 function appendMessage(message, sender) {
     const chatMessages = document.getElementById('chatMessages');
     const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${sender}-message`;  // 修改这里，添加 '-message' 后缀
+    messageDiv.className = `message ${sender}-message`;  // 修改这里，添加 -message 后缀
     messageDiv.textContent = message;
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -55,30 +55,27 @@ async function sendMessage() {
 
 请以友好专业的态度回答用户问题。记住你是Daisy的AI小助理，要展现出对她专业背景的了解，同时保持对话的自然和亲切。`;
 
-        // ... 其他代码保持不变 ...
-
-const response = await fetch('https://api.deepseek.com/chat/completions', {  // 修改这里，添加 /chat/completions
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
-    },
-    body: JSON.stringify({
-        model: "deepseek-chat",
-        messages: [
-            {
-                "role": "system",
-                "content": systemPrompt
+        const response = await fetch('https://api.deepseek.com/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
             },
-            {
-                "role": "user",
-                "content": message
-            }
-        ],
-        stream: false,  // 添加这个参数
-        temperature: 0.7
-    })
-});
+            body: JSON.stringify({
+                model: "deepseek-chat",
+                messages: [
+                    {
+                        "role": "system",
+                        "content": systemPrompt
+                    },
+                    {
+                        "role": "user",
+                        "content": message
+                    }
+                ],
+                stream: false
+            })
+        });
 
         loadingMessage.remove();
 
