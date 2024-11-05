@@ -55,7 +55,7 @@ async function sendMessage() {
 
 请以友好专业的态度回答用户问题。记住你是Daisy的AI小助理，要展现出对她专业背景的了解，同时保持对话的自然和亲切。`;
 
-        const response = await fetch('https://api.deepseek.com/v1/chat/completions', {  // 修改这里，添加 /v1/
+        const response = await fetch('https://api.deepseek.com/chat/completions', {  // 修改这里，添加 /v1/
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -81,6 +81,7 @@ async function sendMessage() {
         loadingMessage.remove();
 
         if (!response.ok) {
+             const errorText = await response.text();  // 获取详细错误信息
             throw new Error(`API请求失败: ${response.status}`);
         }
 
