@@ -1,8 +1,16 @@
+import OpenAI from "openai";
+
+// 初始化 OpenAI 客户端
+const openai = new OpenAI({
+    baseURL: 'https://api.deepseek.com',
+    apiKey: process.env.DEEPSEEK_API_KEY
+});
+
 // 消息显示函数
 function appendMessage(message, sender) {
     const chatMessages = document.getElementById('chatMessages');
     const messageDiv = document.createElement('div');
-    messageDiv.className = `message ${sender}-message`;  // 修改这里，添加 -message 后缀
+    messageDiv.className = `message ${sender}-message`;
     messageDiv.textContent = message;
     chatMessages.appendChild(messageDiv);
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -21,7 +29,6 @@ async function sendMessage() {
         userInput.value = '';
         
         const loadingMessage = appendMessage('正在思考...', 'bot');
-
         const systemPrompt = `你是Daisy Hu（胡晓庆）的AI小助理。以下是Daisy的简历信息：
 
 【自我评价】
@@ -54,39 +61,25 @@ async function sendMessage() {
 - 成功开拓医用气体新市场
 
 请以友好专业的态度回答用户问题。记住你是Daisy的AI小助理，要展现出对她专业背景的了解，同时保持对话的自然和亲切。`;
-
-        const response = await fetch('https://api.deepseek.com/chat/completions', {  // 修改这里，添加 /v1/
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
-            },
-            body: JSON.stringify({
-                model: "deepseek-chat",
-                messages: [
-                    {
-                        "role": "system",
-                        "content": systemPrompt
-                    },
-                    {
-                        "role": "user",
-                        "content": message
-                    }
-                ],
-                temperature: 0.7,  // 保持这个值
-                stream: false
-            })
+// 使用 OpenAI SDK 发送请求
+        const completion = await openai.chat.completions.create({
+            model: "deepseek-chat",
+            messages: [
+                {
+                    "role": "system",
+                    "content": systemPrompt
+                },
+                {
+                    "role": "user",
+                    "content": message
+                }
+            ],
+            temperature: 0.7,
+            stream: false
         });
 
         loadingMessage.remove();
-
-        if (!response.ok) {
-             const errorText = await response.text();  // 获取详细错误信息
-            throw new Error(`API请求失败: ${response.status}`);
-        }
-
-        const data = await response.json();
-        appendMessage(data.choices[0].message.content, 'bot');
+        appendMessage(completion.choices[0].message.content, 'bot');
 
     } catch (error) {
         console.error('Error:', error);
