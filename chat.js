@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // 发送按钮点击事件
     const sendButton = document.querySelector('.send-btn');
     if (sendButton) {
-        sendButton.addEventListener('click', sendMessage);
+        sendButton.onclick = sendMessage;
     }
 
     // 输入框回车事件
@@ -112,3 +112,5 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+// 确保 sendMessage 函数是全局可访问的
+window.sendMessage = sendMessage;
