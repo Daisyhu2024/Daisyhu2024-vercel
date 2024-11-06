@@ -1,10 +1,3 @@
-import OpenAI from "openai";
-
-// 初始化 OpenAI 客户端
-const openai = new OpenAI({
-    baseURL: 'https://api.deepseek.com',
-    apiKey: process.env.DEEPSEEK_API_KEY
-});
 
 // 消息显示函数
 function appendMessage(message, sender) {
@@ -61,31 +54,45 @@ async function sendMessage() {
 - 成功开拓医用气体新市场
 
 请以友好专业的态度回答用户问题。记住你是Daisy的AI小助理，要展现出对她专业背景的了解，同时保持对话的自然和亲切。`;
-// 使用 OpenAI SDK 发送请求
-        const completion = await openai.chat.completions.create({
-            model: "deepseek-chat",
-            messages: [
-                {
-                    "role": "system",
-                    "content": systemPrompt
-                },
-                {
-                    "role": "user",
-                    "content": message
-                }
-            ],
-            temperature: 0.7,
-            stream: false
-        });
+// 使用 fetch 发送请求
+        const response = await fetch('https://api.deepseek.com/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${process.env.DEEPSEEK_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "deepseek-chat",
+                messages: [
+                    {
+                        "role": "system",
+                        "content": systemPrompt
+                    },
+                    {
+                        "role": "user",
+                        "content": message
+                    }
+                ],
+                temperature: 0.7,
+                stream: false
+            })
+         });
 
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`API请求失败: ${response.status} ${errorText}`);
+        }
+
+        const data = await response.json();
         loadingMessage.remove();
-        appendMessage(completion.choices[0].message.content, 'bot');
+        appendMessage(data.choices[0].message.content, 'bot');
 
     } catch (error) {
         console.error('Error:', error);
         appendMessage('抱歉，我遇到了一些技术问题。请稍后再试。', 'bot');
     }
-}
+}         
+       
 
 // 添加事件监听器
 document.addEventListener('DOMContentLoaded', function() {
